@@ -2,7 +2,15 @@ import type {HydratedDocument, Types} from 'mongoose';
 import type {Freet} from './model';
 import FreetModel from './model';
 import UserCollection from '../user/collection';
+import { constructUserResponse } from '../user/util';
+import UserModel from '../user/model';
 
+export enum VisionEnum {
+  DRAFT=0,
+  ANONYMOUS=1,
+  PRIVATE=2,
+  PUBLIC=3,
+}
 /**
  * This files contains a class that has the functionality to explore freets
  * stored in MongoDB, including adding, finding, updating, and deleting freets.
@@ -17,15 +25,19 @@ class FreetCollection {
    *
    * @param {string} authorId - The id of the author of the freet
    * @param {string} content - The id of the content of the freet
+   * @param {Enumerator}
    * @return {Promise<HydratedDocument<Freet>>} - The newly created freet
    */
-  static async addOne(authorId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Freet>> {
+  static async addOne(authorId: Types.ObjectId | string, content: string, vision: number): Promise<HydratedDocument<Freet>> {
     const date = new Date();
+    const reps = new Map()
     const freet = new FreetModel({
       authorId,
       dateCreated: date,
+      vision,
       content,
-      dateModified: date
+      dateModified: date,
+      replies: reps
     });
     await freet.save(); // Saves freet to MongoDB
     return freet.populate('authorId');
@@ -46,9 +58,39 @@ class FreetCollection {
    *
    * @return {Promise<HydratedDocument<Freet>[]>} - An array of all of the freets
    */
-  static async findAll(): Promise<Array<HydratedDocument<Freet>>> {
+  static async findAll(userId?: Types.ObjectId | string): Promise<Array<HydratedDocument<Freet>>> {
     // Retrieves freets and sorts them from most to least recent
-    return FreetModel.find({}).sort({dateModified: -1}).populate('authorId');
+    if (userId){
+      const user = await UserCollection.findOneByUserId(userId)
+      const friendsUsernames = user.friends
+      var friendsUsers = []
+      for (const term of friendsUsernames){
+        friendsUsers.push(await UserCollection.findOneByUsername(term))
+      }
+      var friendsIds=[]
+      for (const item of friendsUsers){
+        if (item){
+          friendsIds.push(item._id)
+        }
+      }
+      return FreetModel.find({
+        $or:[
+          {vision: 3},
+          {$and:[
+            {vision: 2},
+            {authorId: {$in: friendsIds}}
+          ]},
+          {vision: 1},
+        ]
+      }).sort({dateModified: -1}).populate('authorId');
+    } else{
+      return FreetModel.find({
+          $or:[
+            {vision: 3},
+            {vision: 1}
+          ]
+      }).sort({dateModified: -1}).populate('authorId');
+    }
   }
 
   /**
@@ -57,9 +99,44 @@ class FreetCollection {
    * @param {string} username - The username of author of the freets
    * @return {Promise<HydratedDocument<Freet>[]>} - An array of all of the freets
    */
-  static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Freet>>> {
+  static async findAllByUsername(username: string, userId?: Types.ObjectId | string): Promise<Array<HydratedDocument<Freet>>> {
     const author = await UserCollection.findOneByUsername(username);
-    return FreetModel.find({authorId: author._id}).sort({dateModified: -1}).populate('authorId');
+    if (userId){
+      const user = await UserCollection.findOneByUserId(userId)
+      const friendsUsernames = user.friends
+      var friendsUsers = []
+      for (const term of friendsUsernames){
+        friendsUsers.push(await UserCollection.findOneByUsername(term))
+      }
+      var friendsIds=[]
+      for (const item of friendsUsers){
+        if (item){
+          friendsIds.push(item._id)
+        }
+      }
+      return FreetModel.find({
+        $and:[
+          {authorId: author._id},
+          {
+            $or:[
+              {vision: 3},
+              {$and:[
+                {vision: 2},
+                {authorId: {$in: friendsIds}}
+              ]},
+              {vision: 1},
+            ]
+          }
+        ]
+      }).populate('authorId');
+    }else{
+      return FreetModel.find({
+        $and:[
+          {authorId: author._id},
+          {vision: 3}
+        ]
+      }).populate('authorId');
+    }
   }
 
   /**
@@ -69,10 +146,11 @@ class FreetCollection {
    * @param {string} content - The new content of the freet
    * @return {Promise<HydratedDocument<Freet>>} - The newly updated freet
    */
-  static async updateOne(freetId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Freet>> {
+  static async updateOne(freetId: Types.ObjectId | string, content: string, userId: string): Promise<HydratedDocument<Freet>> {
     const freet = await FreetModel.findOne({_id: freetId});
-    freet.content = content;
-    freet.dateModified = new Date();
+    const user = await UserCollection.findOneByUserId(userId);
+    const username = user.username
+    freet.replies.set(username,content)
     await freet.save();
     return freet.populate('authorId');
   }

@@ -11,6 +11,10 @@ export type User = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   username: string;
   password: string;
+  following: string[];
+  friends: string[];
+  friendsRequested: string[];
+  verified: number;
   dateJoined: Date;
 };
 
@@ -26,6 +30,26 @@ const UserSchema = new Schema({
   // The user's password
   password: {
     type: String,
+    required: true
+  },
+  // The user's followings
+  following: {
+    type: [String],
+    required: false
+  },
+  // The user's friends
+  friends: {
+    type: [String],
+    required: false
+  },
+  // The user's friend requestings
+  friendsRequested: {
+    type: [String],
+    required: false
+  },
+  // The user's verification status
+  verified: {
+    type: Number,
     required: true
   },
   // The date the user joined

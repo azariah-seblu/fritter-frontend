@@ -1,4 +1,4 @@
-import type {Types} from 'mongoose';
+import type {Types, PopulatedDoc, Document} from 'mongoose';
 import {Schema, model} from 'mongoose';
 import type {User} from '../user/model';
 
@@ -12,16 +12,20 @@ export type Freet = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   authorId: Types.ObjectId;
   dateCreated: Date;
+  vision: Number;
   content: string;
   dateModified: Date;
+  replies: Map<String,String>;
 };
 
 export type PopulatedFreet = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   authorId: User;
+  vision: Number
   dateCreated: Date;
   content: string;
   dateModified: Date;
+  replies: Map<String,String>;
 };
 
 // Mongoose schema definition for interfacing with a MongoDB table
@@ -40,6 +44,10 @@ const FreetSchema = new Schema<Freet>({
     type: Date,
     required: true
   },
+  vision: {
+    type: Number,
+    required: true
+  },
   // The content of the freet
   content: {
     type: String,
@@ -49,6 +57,10 @@ const FreetSchema = new Schema<Freet>({
   dateModified: {
     type: Date,
     required: true
+  },
+  replies: {
+    type: Map,
+    required: false
   }
 });
 

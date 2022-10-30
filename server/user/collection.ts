@@ -20,8 +20,8 @@ class UserCollection {
    */
   static async addOne(username: string, password: string): Promise<HydratedDocument<User>> {
     const dateJoined = new Date();
-
-    const user = new UserModel({username, password, dateJoined});
+    const verified = 1;
+    const user = new UserModel({username, password, dateJoined, verified});
     await user.save(); // Saves user to MongoDB
     return user;
   }
@@ -43,7 +43,7 @@ class UserCollection {
    * @return {Promise<HydratedDocument<User>> | Promise<null>} - The user with the given username, if any
    */
   static async findOneByUsername(username: string): Promise<HydratedDocument<User>> {
-    return UserModel.findOne({username: new RegExp(`^${username.trim()}$`, 'i')});
+    return UserModel.findOne({username: new RegExp(`^${username?.trim()}$`, 'i')});
   }
 
   /**
@@ -67,16 +67,33 @@ class UserCollection {
    * @param {Object} userDetails - An object with the user's updated credentials
    * @return {Promise<HydratedDocument<User>>} - The updated user
    */
-  static async updateOne(userId: Types.ObjectId | string, userDetails: {password?: string; username?: string}): Promise<HydratedDocument<User>> {
+  static async updateOne(userId: Types.ObjectId | string, userDetails: any): Promise<HydratedDocument<User>> {
     const user = await UserModel.findOne({_id: userId});
     if (userDetails.password) {
-      user.password = userDetails.password;
+      user.password = userDetails.password as string;
     }
 
     if (userDetails.username) {
-      user.username = userDetails.username;
+      user.username = userDetails.username as string;
     }
 
+    if (userDetails.follow) {
+      user.following.push(userDetails.follow);
+    }
+
+    if (userDetails.friendRequest) {
+      const otherUser = await UserModel.findOne({username: userDetails.friendRequest});
+      if (otherUser.friendsRequested.includes(user.username)){
+        otherUser.friends.push(user.username);
+        user.friends.push(otherUser.username);
+        otherUser.save();
+      } else {
+        user.friendsRequested.push(otherUser.username);
+      }
+    }
+    if (userDetails.verify) {
+      user.verified = 2;
+    }
     await user.save();
     return user;
   }
