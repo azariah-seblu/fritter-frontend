@@ -4,10 +4,11 @@
 <template>
   <article
     class="freet"
+    :class="freet.vision==3 ? 'public' : (freet.vision==2 ? 'private': '')"
   >
     <header>
       <h3 class="author">
-        @{{ freet.author }}
+        @{{ freet.author + freet.vision }}
       </h3>
       <div
         v-if="$store.state.username === freet.author"
@@ -168,7 +169,20 @@ export default {
 
 <style scoped>
 .freet {
+    background-color: blue;
     border: 1px solid #111;
+    padding: 20px;
+    position: relative;
+}
+.public {
+    background-color: green;
+    border: 1px solid rgb(17, 17, 17);
+    padding: 20px;
+    position: relative;
+}
+.private {
+    background-color: red;
+    border: 1px solid rgb(17, 17, 17);
     padding: 20px;
     position: relative;
 }
