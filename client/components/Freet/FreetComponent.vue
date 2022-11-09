@@ -9,38 +9,44 @@
     <header>
       <h3 class="author"
           v-if="freet.vision!=1">
-        @{{ freet.author + freet.vision }}
+        @{{ freet.author }}
       </h3>
       <div
         v-if="$store.state.username === freet.author"
         class="actions"
       >
-        <button
+        <button class="buttons"
           v-if="editing"
           @click="submitEdit"
         >
           ✅ Save changes
         </button>
         <button
+          class="buttons"
           v-if="editing"
           @click="stopEditing"
         >
           🚫 Discard changes
         </button>
         <button
+          class="buttons"
           v-if="!editing"
           @click="startEditing"
         >
           ✏️ Edit
         </button>
-        <button @click="deleteFreet">
+        <button
+          class="buttons"
+         @click="deleteFreet">
           🗑️ Delete
         </button>
       </div>
       <div
         v-if="$store.state.username != freet.author && $store.state.username && freet.vision!=1"
       >
-        <button @click="addFriend">
+        <button
+          class="buttons"
+         @click="addFriend">
           ➕ Add Friend
         </button>
       </div>
@@ -229,9 +235,14 @@ export default {
     
 }
 .public {
-    background-color: #6FFF6A;
+    background-color: #FCFA78;
 }
 .private {
     background-color: #D84A4A;
+}
+.buttons {
+    background-color: yellow;
+    border-radius: 5px;
+    color: black;
 }
 </style>

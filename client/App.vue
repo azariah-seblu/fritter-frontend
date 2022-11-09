@@ -46,7 +46,7 @@ main {
   background-color: #BA7CFF;
   color: white;
   padding: 0 5em 5em;
-  font: arial;
+  font-family: sans-serif;
 }
 
 .alerts {

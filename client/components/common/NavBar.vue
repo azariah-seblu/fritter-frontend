@@ -42,7 +42,9 @@
 <style scoped>
 nav {
     padding: 1vw 2vw;
-    background-color: #ccc;
+    background-color: #FCFA78;
+    font-family: sans-serif;
+    color: black;
     display: flex;
     justify-content: space-between;
     align-items: center;

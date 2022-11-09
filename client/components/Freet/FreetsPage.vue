@@ -82,10 +82,13 @@ header, header > * {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-family: sans-serif;
+
 }
 
 button {
     margin-right: 10px;
+    font-family: sans-serif;
 }
 
 section .scrollbox {

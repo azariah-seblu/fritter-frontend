@@ -46,12 +46,16 @@ export default {
 
 <style scoped>
 form {
+    font-family: sans-serif;
+
     display: flex;
     position: relative;
 }
 
 input {
-    padding: 0 5px;
+    font-family: sans-serif;
+    border-radius: 5px;
+    padding: 0 px;
     min-width: 200px;
 }
 </style>
