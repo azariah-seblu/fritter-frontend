@@ -2,7 +2,7 @@
 <!-- User should be authenticated in order to see this page -->
 
 <template>
-  <main>
+  <main class = "page">
     <section>
       <header>
         <h2>Account settings for @{{ $store.state.username }}</h2>
@@ -39,3 +39,4 @@ export default {
   }
 };
 </script>
+

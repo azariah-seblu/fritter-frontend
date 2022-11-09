@@ -62,6 +62,7 @@ class FreetCollection {
     // Retrieves freets and sorts them from most to least recent
     if (userId){
       const user = await UserCollection.findOneByUserId(userId)
+      const userstring = user.username as string
       const friendsUsernames = user.friends
       var friendsUsers = []
       for (const term of friendsUsernames){
@@ -73,12 +74,16 @@ class FreetCollection {
           friendsIds.push(item._id)
         }
       }
+      friendsIds.push(userId)
       return FreetModel.find({
         $or:[
           {vision: 3},
           {$and:[
             {vision: 2},
-            {authorId: {$in: friendsIds}}
+            {$or:[
+              // {authorId: userstring},
+              {authorId: {$in: friendsIds}}
+            ]}
           ]},
           {vision: 1},
         ]

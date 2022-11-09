@@ -219,21 +219,19 @@ export default {
 
 <style scoped>
 .freet {
-    background-color: blue;
+    background-color: #6379FF;
+    color: black;
     border: 1px solid #111;
+    margin: 2px;
     padding: 20px;
     position: relative;
+    border-radius: 25px;
+    
 }
 .public {
-    background-color: green;
-    border: 1px solid rgb(17, 17, 17);
-    padding: 20px;
-    position: relative;
+    background-color: #6FFF6A;
 }
 .private {
-    background-color: red;
-    border: 1px solid rgb(17, 17, 17);
-    padding: 20px;
-    position: relative;
+    background-color: #D84A4A;
 }
 </style>
