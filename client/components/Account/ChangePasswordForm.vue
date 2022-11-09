@@ -9,7 +9,7 @@ export default {
   data() {
     return {
       url: '/api/users',
-      method: 'PATCH',
+      method: 'PUT',
       hasBody: true,
       fields: [
         {id: 'password', label: 'Password', value: ''}

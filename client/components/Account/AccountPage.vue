@@ -9,6 +9,7 @@
       </header>
       <ChangeUsernameForm />
       <ChangePasswordForm />
+      <VerifyUserForm />
     </section>
     <section>
       <header>
@@ -25,6 +26,7 @@ import ChangeUsernameForm from '@/components/Account/ChangeUsernameForm.vue';
 import ChangePasswordForm from '@/components/Account/ChangePasswordForm.vue';
 import DeleteAccountForm from '@/components/Account/DeleteAccountForm.vue';
 import LogoutForm from '@/components/Account/LogoutForm.vue';
+import VerifyUserForm from './VerifyUserForm.vue';
 
 export default {
   name: 'AccountPage',
@@ -32,7 +34,8 @@ export default {
     ChangeUsernameForm,
     ChangePasswordForm,
     DeleteAccountForm,
-    LogoutForm
+    LogoutForm,
+    VerifyUserForm,
   }
 };
 </script>

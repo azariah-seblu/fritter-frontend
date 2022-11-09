@@ -7,7 +7,8 @@
     :class="freet.vision==3 ? 'public' : (freet.vision==2 ? 'private': '')"
   >
     <header>
-      <h3 class="author">
+      <h3 class="author"
+          v-if="freet.vision!=1">
         @{{ freet.author + freet.vision }}
       </h3>
       <div
@@ -34,6 +35,13 @@
         </button>
         <button @click="deleteFreet">
           🗑️ Delete
+        </button>
+      </div>
+      <div
+        v-if="$store.state.username != freet.author && $store.state.username && freet.vision!=1"
+      >
+        <button @click="addFriend">
+          ➕ Add Friend
         </button>
       </div>
     </header>
@@ -133,6 +141,18 @@ export default {
       };
       this.request(params);
     },
+    addFriend() {
+      const params = {
+        method: 'PUT',
+        message: 'Successfully added Friend (You will not see their private freets unless they friend you back)',
+        body: JSON.stringify({friendRequest: this.freet.author}),
+        callback: () => {
+          this.$set(this.alerts, params.message, 'success');
+          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+        }
+      } 
+      this.request2(params)
+    },
     async request(params) {
       /**
        * Submits a request to the freet's endpoint
@@ -149,6 +169,36 @@ export default {
 
       try {
         const r = await fetch(`/api/freets/${this.freet._id}`, options);
+        if (!r.ok) {
+          const res = await r.json();
+          throw new Error(res.error);
+        }
+
+        this.editing = false;
+        this.$store.commit('refreshFreets');
+
+        params.callback();
+      } catch (e) {
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+    async request2(params) {
+      /**
+       * Submits a request to the freet's endpoint
+       * @param params - Options for the request
+       * @param params.body - Body for the request, if it exists
+       * @param params.callback - Function to run if the the request succeeds
+       */
+      const options = {
+        method: params.method, headers: {'Content-Type': 'application/json'}
+      };
+      if (params.body) {
+        options.body = params.body;
+      }
+
+      try {
+        const r = await fetch(`/api/users`, options);
         if (!r.ok) {
           const res = await r.json();
           throw new Error(res.error);
