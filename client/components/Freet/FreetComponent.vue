@@ -11,7 +11,7 @@
           v-if="freet.vision!=1">
         @{{ freet.author }}
       </h3>
-      <div
+      <!-- <div
         v-if="$store.state.username === freet.author"
         class="actions"
       >
@@ -40,7 +40,7 @@
          @click="deleteFreet">
           🗑️ Delete
         </button>
-      </div>
+      </div> -->
       <div
         v-if="$store.state.username != freet.author && $store.state.username && freet.vision!=1"
       >
